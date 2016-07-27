@@ -1,13 +1,21 @@
 var express = require('express'),
   // TODO: require in our request proxy module
-
+  requestProxy = require('express-request-proxy'),
   port = process.env.PORT || 3000,
   app = express();
 
 // TODO: now use our proxy within a function to request
 //        our github data on the server.
 
-
+var proxyGitHub = function(request, response){
+  console.log('Routing GitHub request for', request.params[0]);
+  (
+    requestProxy({
+      url: 'http://api.github.com' + request.params[0],
+      headers: {Authorization: 'token ' + process.env.GITHUB_TOKEN }
+    })
+  )(request, response);
+};
 app.get('/github/*', proxyGitHub);
 
 app.use(express.static('./'));
